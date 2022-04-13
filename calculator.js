@@ -38,85 +38,125 @@ let buffer = 0;
 let operator = null;
 let firstValue = null;
 let secondValue = null;
+let prevCalc = {};
 
 // Event handlers and helpers
 function handleButtonPress(e) {
   if (operatorBtns.includes(this)) {
-    setValue(buffer);
-    operator = setOperator(this.id);
-    buffer = 0;
+    handleOperatorAction(this);
   } else if (inputBtns.includes(this)) {
     addToBuffer(this.id);
     updateDisplay(buffer);
   } else {
     switch (this.id) {
-      case 'ac':
+      case "ac":
         calcReset();
         break;
-      case 'neg':
-        toggleNeg()
+      case "neg":
+        toggleNeg();
         break;
-      case 'equals':
-        break;    
+      case "percent":
+        buffer = percent(buffer);
+        updateDisplay(buffer);
+        break;
     }
   }
-};
+}
 
 function toggleNeg() {
-    buffer = -buffer;
-    updateDisplay(buffer);
-};
+  buffer = -buffer;
+  updateDisplay(buffer);
+}
 
-function setOperator(operator) {
+function handleOperatorAction(element) {
+  let result;
+  let prevOperator;
+  setOperand(buffer);
+  buffer = 0;
+  if (!operator) {
+    setOperator(element.id);
+    prevOperator = operator;
+  } else {
+    prevOperator = operator;
+    setOperator(element.id);
+  }
+
+  if ((prevOperator == "equals") && (operator == 'equals') && !secondValue) {
+    if (prevCalc.operator)
+    result = operate(firstValue, prevCalc.secondValue, prevCalc.operator);
+    firstValue = result;
+  }
+
+  if (firstValue && secondValue && (prevOperator != "equals")) {
+    prevCalc = {
+      firstValue: firstValue,
+      secondValue: secondValue,
+      operator: prevOperator,
+    };
+    result = operate(firstValue, secondValue, prevOperator);
+    firstValue = result;
+    secondValue = null;
+  }
+
+  if (result) {
+    updateDisplay(result);
+  }
+}
+
+function setOperator(elementId) {
   // returns a function if valid operator
-  switch (operator) {
+  let operatorCallback;
+  switch (elementId) {
     case "percent":
-      return percent;
+      operatorCallback = percent;
       break;
     case "divide":
-      return divide;
+      operatorCallback = divide;
       break;
     case "multiply":
-      return multiply;
+      operatorCallback = multiply;
       break;
     case "add":
-      return add;
+      operatorCallback = add;
       break;
     case "subtract":
-      return subtract;
+      operatorCallback = subtract;
       break;
     default:
-      updateDisplay("ERROR");
+      operatorCallback = "equals";
   }
-};
+  operator = operatorCallback;
+}
 
 function updateDisplay(text) {
   if (!text) {
-    display.innerText = '0';
-  }else {
+    display.innerText = "0";
+  } else {
     display.innerText = text;
   }
-};
+}
 
 function addToBuffer(char) {
-  const tempBuffer = buffer.toString().split('');
-  if (char == '.' && !tempBuffer.includes(char)){
+  const tempBuffer = buffer.toString().split("");
+  if (char == "." && !tempBuffer.includes(char)) {
     tempBuffer.push(char);
     // buffer will be a string until after decimal
-    buffer = tempBuffer.join('');
+    buffer = tempBuffer.join("");
   } else {
     tempBuffer.push(char);
-    buffer = parseFloat(tempBuffer.join(''));
+    buffer = parseFloat(tempBuffer.join(""));
   }
-};
+}
 
-function setValue(val) {
-  if (!firstValue) {
+function setOperand(val) {
+  if (!val) {
+    return;
+  } else if (!firstValue) {
     firstValue = val;
-  } else {
+  } else if (!secondValue) {
     secondValue = val;
-  }
-};
+  } else return;
+}
 
 function calcReset() {
   buffer = 0;
