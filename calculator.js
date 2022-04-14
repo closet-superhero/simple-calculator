@@ -32,84 +32,85 @@ const operatorBtns = buttons.filter((button) => {
 const inputBtns = buttons.filter((button) => {
   return button.classList.contains("input");
 });
+const funcBtns = buttons.filter((button) => {
+  return button.classList.contains("function");
+});
 
 // Initialize data
-let buffer = 0;
+let inputBuffer = "0";
+const input = [];
+const MAX_DISPLAY_LENGTH = 9;
 let operator = null;
-let firstValue = null;
-let secondValue = null;
-let prevCalc = {};
+display.value = 0;
 
-// Event handlers and helpers
-function handleButtonPress(e) {
-  if (operatorBtns.includes(this)) {
-    handleOperatorAction(this);
-  } else if (inputBtns.includes(this)) {
-    addToBuffer(this.id);
-    updateDisplay(buffer);
-  } else {
-    switch (this.id) {
-      case "ac":
-        calcReset();
-        break;
-      case "neg":
-        toggleNeg();
-        break;
-      case "percent":
-        buffer = percent(buffer);
-        updateDisplay(buffer);
-        break;
-    }
+// Set event listeners
+
+inputBtns.forEach((button) =>
+  button.addEventListener("mousedown", handleInput)
+);
+
+operatorBtns.forEach((button) =>
+  button.addEventListener("mousedown", handleOperator)
+);
+
+funcBtns.forEach((button) =>
+  button.addEventListener("mousedown", handleFuncBtn)
+);
+
+// Event functions
+
+function handleInput(e) {
+  // this refers to the target element
+  if (this.id == "." && inputBuffer.includes(".")) {
+    return;
+  } else if (display.value.length < MAX_DISPLAY_LENGTH) {
+    inputBuffer += this.id;
   }
+  if (inputBuffer == ".") {
+    inputBuffer = "0.";
+  }
+  updateDisplay(parseFloat(inputBuffer));
 }
 
-function toggleNeg() {
-  buffer = -buffer;
-  updateDisplay(buffer);
-}
-
-function handleOperatorAction(element) {
+function handleOperator(e) {
+  const numFromBuffer = parseFloat(inputBuffer);
+  let numOfArgs;
   let result;
-  let prevOperator;
-  setOperand(buffer);
-  buffer = 0;
   if (!operator) {
-    setOperator(element.id);
-    prevOperator = operator;
-  } else {
-    prevOperator = operator;
-    setOperator(element.id);
+    operator = setOperator(this.id);
   }
 
-  if ((prevOperator == "equals") && (operator == 'equals') && !secondValue) {
-    if (prevCalc.operator)
-    result = operate(firstValue, prevCalc.secondValue, prevCalc.operator);
-    firstValue = result;
+  if (operator && numFromBuffer != NaN) {
+    numOfArgs = input.push(numFromBuffer);
+    inputBuffer = "0";
   }
 
-  if (firstValue && secondValue && (prevOperator != "equals")) {
-    prevCalc = {
-      firstValue: firstValue,
-      secondValue: secondValue,
-      operator: prevOperator,
-    };
-    result = operate(firstValue, secondValue, prevOperator);
-    firstValue = result;
-    secondValue = null;
-  }
-
-  if (result) {
+  if (numOfArgs == 2 && operator) {
+    result = input.reduce((a, b) => operate(a, b, operator));
+    input.splice(0, numOfArgs, result);
     updateDisplay(result);
+  }
+
+  operator = setOperator(this.id);
+}
+
+function handleFuncBtn(e) {
+  switch (this.id) {
+    case "ac":
+      calcReset();
+      break;
+    case "neg":
+      toggleNeg();
+      break;
+    case "percent":
+      break;
   }
 }
 
 function setOperator(elementId) {
-  // returns a function if valid operator
+  // returns a function if valid operator else null
   let operatorCallback;
   switch (elementId) {
-    case "percent":
-      operatorCallback = percent;
-      break;
     case "divide":
       operatorCallback = divide;
       break;
@@ -123,50 +124,37 @@ function setOperator(elementId) {
       operatorCallback = subtract;
       break;
     default:
-      operatorCallback = "equals";
+      operatorCallback = null;
   }
-  operator = operatorCallback;
+  return operatorCallback;
 }
 
-function updateDisplay(text) {
-  if (!text) {
-    display.innerText = "0";
+// Displaying data
+
+function updateDisplay(num) {
+  display.value = num;
+}
+
+function toggleNeg() {
+  let negBuffer;
+  if (inputBuffer == 0) {
+    if (input.length == 0) {
+      return;
+    } else {
+      // so we can do math with result of prev calculation
+      negBuffer = parseFloat(-input[0]);
+      input.splice(0);
+    }
   } else {
-    display.innerText = text;
+    negBuffer = parseFloat(-inputBuffer);
   }
-}
-
-function addToBuffer(char) {
-  const tempBuffer = buffer.toString().split("");
-  if (char == "." && !tempBuffer.includes(char)) {
-    tempBuffer.push(char);
-    // buffer will be a string until after decimal
-    buffer = tempBuffer.join("");
-  } else {
-    tempBuffer.push(char);
-    buffer = parseFloat(tempBuffer.join(""));
-  }
-}
-
-function setOperand(val) {
-  if (!val) {
-    return;
-  } else if (!firstValue) {
-    firstValue = val;
-  } else if (!secondValue) {
-    secondValue = val;
-  } else return;
+  inputBuffer = negBuffer.toString();
+  updateDisplay(negBuffer);
 }
 
 function calcReset() {
-  buffer = 0;
+  inputBuffer = "0";
   operator = null;
-  firstValue = null;
-  secondValue = null;
-  updateDisplay(buffer);
+  input.splice(0);
+  updateDisplay(0);
 }
-
-// Set event listeners
-buttons.forEach((button) =>
-  button.addEventListener("click", handleButtonPress)
-);

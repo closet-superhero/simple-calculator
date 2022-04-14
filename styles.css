@@ -1,5 +1,7 @@
 *, *::after, *::before {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 /* begin main styles */
 body {
@@ -30,6 +32,10 @@ body {
   gap: .25rem;
   padding: .25rem;
 }
+
+.span-2 {
+  grid-column: auto / span 2;
+}
 /* end main styles */
 
 /* begin display styles */
@@ -40,12 +46,13 @@ body {
   box-shadow: inset 0 0 0 .1rem rgb(16, 20, 130);
   padding: 1rem 1rem;
 }
+.display:focus-visible {
+  outline: none;
+}
 .display.display-text {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
   font-family: monospace;
   font-size: 4rem;
+  text-align: end;
 }
 
 /* end display styles */
@@ -62,14 +69,11 @@ body {
   font-size: 1.5rem;
 }
 
-.button.function {
+.button.function, .button.operator {
   background-color: rgb(233, 20, 20);
 }
 
-.button.span-2 {
-  grid-column: auto / span 2;
-}
-.button.pressed {
-  box-shadow: inset 0 0 0 .2rem black;
+.button:focus-visible {
+  outline: lime inset .2rem;
 }
 /* end button styles */
