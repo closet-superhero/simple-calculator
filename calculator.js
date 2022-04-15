@@ -77,7 +77,7 @@ function handleOperator(e) {
   let numOfArgs;
   let result;
   if (!operator) {
-    operator = setOperator(this.id);
+    operator = selectOperator(this.id);
   }
 
   if (operator && numFromBuffer != NaN) {
@@ -91,7 +91,7 @@ function handleOperator(e) {
     updateDisplay(result);
   }
 
-  operator = setOperator(this.id);
+  operator = selectOperator(this.id);
 }
 
 function handleFuncBtn(e) {
@@ -103,11 +103,12 @@ function handleFuncBtn(e) {
       toggleNeg();
       break;
     case "percent":
+      handlePercentBtn();
       break;
   }
 }
 
-function setOperator(elementId) {
+function selectOperator(elementId) {
   // returns a function if valid operator else null
   let operatorCallback;
   switch (elementId) {
@@ -157,4 +158,21 @@ function calcReset() {
   operator = null;
   input.splice(0);
   updateDisplay(0);
+}
+
+function handlePercentBtn(){
+  let tempBuffer;
+  if (inputBuffer == 0) {
+    if (input.length == 0) {
+      return;
+    } else {
+      // so we can do math with result of prev calculation
+      tempBuffer = percent(input[0]);
+      input.splice(0);
+    }
+  } else {
+    tempBuffer = percent(inputBuffer);
+  }
+  inputBuffer = tempBuffer;
+  updateDisplay(inputBuffer);
 }
