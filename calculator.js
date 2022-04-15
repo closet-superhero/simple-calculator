@@ -45,6 +45,14 @@ display.value = 0;
 
 // Set event listeners
 
+buttons.forEach((button) =>
+  button.addEventListener("mousedown", togglePressed)
+);
+
+buttons.forEach((button) => 
+button.addEventListener("mouseup", togglePressed)
+);
+
 inputBtns.forEach((button) =>
   button.addEventListener("mousedown", handleInput)
 );
@@ -58,6 +66,10 @@ funcBtns.forEach((button) =>
 );
 
 // Event functions
+
+function togglePressed(e) {
+  this.classList.toggle('pressed');
+}
 
 function handleInput(e) {
   // this refers to the target element
@@ -74,20 +86,20 @@ function handleInput(e) {
 
 function handleOperator(e) {
   const numFromBuffer = parseFloat(inputBuffer);
-  let numOfArgs;
+  let numOfOperands;
   let result;
   if (!operator) {
     operator = selectOperator(this.id);
   }
 
   if (operator && numFromBuffer != NaN) {
-    numOfArgs = input.push(numFromBuffer);
+    numOfOperands = input.push(numFromBuffer);
     inputBuffer = "0";
   }
 
-  if (numOfArgs == 2 && operator) {
+  if (numOfOperands == 2 && operator) {
     result = input.reduce((a, b) => operate(a, b, operator));
-    input.splice(0, numOfArgs, result);
+    input.splice(0, numOfOperands, result);
     updateDisplay(result);
   }
 
@@ -160,7 +172,7 @@ function calcReset() {
   updateDisplay(0);
 }
 
-function handlePercentBtn(){
+function handlePercentBtn() {
   let tempBuffer;
   if (inputBuffer == 0) {
     if (input.length == 0) {
@@ -173,6 +185,6 @@ function handlePercentBtn(){
   } else {
     tempBuffer = percent(inputBuffer);
   }
-  inputBuffer = tempBuffer;
+  inputBuffer = tempBuffer.toString();
   updateDisplay(inputBuffer);
 }
