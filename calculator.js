@@ -84,7 +84,7 @@ function handleInput(e) {
 }
 
 function handleOperator(e) {
-  const numFromBuffer = parseFloat(inputBuffer);
+  const numFromBuffer = Number(inputBuffer);
   let numOfOperands;
   let result;
   if (!operator) {
@@ -143,6 +143,10 @@ function selectOperator(elementId) {
 
 // Displaying data
 function updateDisplay(num) {
+  let numLen = num.toString().length;
+  if(numLen > MAX_DISPLAY_LENGTH) {
+    num = num.toExponential(3);
+  }
   display.value = num;
 }
 
