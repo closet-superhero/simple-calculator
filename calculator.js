@@ -71,9 +71,12 @@ function handleInput(e) {
   // 'this' refers to the target element
   if (this.id == "." && inputBuffer.includes(".")) {
     return;
-  } else if (display.value.length < MAX_DISPLAY_LENGTH) {
-    inputBuffer += this.id;
+  } else if (inputBuffer.length > MAX_DISPLAY_LENGTH) {
+    return;
   }
+
+  inputBuffer += this.id;
+
   if (inputBuffer == ".") {
     inputBuffer = "0."; // add leading 0 for number parsing
   }
