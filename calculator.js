@@ -44,14 +44,11 @@ let operator = null;
 display.value = 0;
 
 // Set event listeners
-
 buttons.forEach((button) =>
   button.addEventListener("mousedown", togglePressed)
 );
 
-buttons.forEach((button) => 
-button.addEventListener("mouseup", togglePressed)
-);
+buttons.forEach((button) => button.addEventListener("mouseup", togglePressed));
 
 inputBtns.forEach((button) =>
   button.addEventListener("mousedown", handleInput)
@@ -66,20 +63,19 @@ funcBtns.forEach((button) =>
 );
 
 // Event functions
-
 function togglePressed(e) {
-  this.classList.toggle('pressed');
+  this.classList.toggle("pressed");
 }
 
 function handleInput(e) {
-  // this refers to the target element
+  // 'this' refers to the target element
   if (this.id == "." && inputBuffer.includes(".")) {
     return;
   } else if (display.value.length < MAX_DISPLAY_LENGTH) {
     inputBuffer += this.id;
   }
   if (inputBuffer == ".") {
-    inputBuffer = "0.";
+    inputBuffer = "0."; // add leading 0 for number parsing
   }
   updateDisplay(parseFloat(inputBuffer));
 }
@@ -92,7 +88,7 @@ function handleOperator(e) {
     operator = selectOperator(this.id);
   }
 
-  if (operator && numFromBuffer != NaN) {
+  if (operator && !isNaN(numFromBuffer)) {
     numOfOperands = input.push(numFromBuffer);
     inputBuffer = "0";
   }
@@ -143,11 +139,11 @@ function selectOperator(elementId) {
 }
 
 // Displaying data
-
 function updateDisplay(num) {
   display.value = num;
 }
 
+// Other calculator functions
 function toggleNeg() {
   let negBuffer;
   if (inputBuffer == 0) {
@@ -159,7 +155,7 @@ function toggleNeg() {
       input.splice(0);
     }
   } else {
-    negBuffer = parseFloat(-inputBuffer);
+    negBuffer = -inputBuffer;
   }
   inputBuffer = negBuffer.toString();
   updateDisplay(negBuffer);
