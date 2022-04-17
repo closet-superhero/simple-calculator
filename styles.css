@@ -10,18 +10,24 @@ body {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-evenly;
   align-items: center;
   height: 100vh;
   background-color: lightgoldenrodyellow;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   min-width: 300px;
 }
+h1 {
+  font-family: fantasy;
+  font-size: 4rem;
+  color: rgb(16, 20, 130);
+}
 .container {
   background-color: rgb(16, 20, 212);
   max-width: 25rem;
   max-height: 35rem;
-  padding: 0.5rem;
+  padding: 1rem;
   flex: 1 0 auto;
 }
 .calculator {
