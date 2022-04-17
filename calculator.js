@@ -15,8 +15,8 @@ function divide(a, b) {
   return a / b;
 }
 
-function percent(a) {
-  return a / 100;
+function percent(a, b) {
+  return a * (b/100);
 }
 
 function operate(a, b, operatorCallback) {
@@ -162,7 +162,7 @@ function toggleNeg() {
       input.splice(0);
     }
   } else {
-    negBuffer = -inputBuffer;
+    negBuffer = -parseFloat(inputBuffer);
   }
   inputBuffer = negBuffer.toString();
   updateDisplay(negBuffer);
@@ -177,17 +177,10 @@ function calcReset() {
 
 function handlePercentBtn() {
   let tempBuffer;
-  if (inputBuffer == 0) {
-    if (input.length == 0) {
-      return;
-    } else {
-      // so we can do math with result of prev calculation
-      tempBuffer = percent(input[0]);
-      input.splice(0);
-    }
-  } else {
-    tempBuffer = percent(inputBuffer);
-  }
-  inputBuffer = tempBuffer.toString();
-  updateDisplay(inputBuffer);
+  let result;
+  let operand = input[0] ? input[0] : 0;
+  tempBuffer = parseFloat(inputBuffer);
+  result = percent(operand, tempBuffer);
+  inputBuffer = result.toString();
+  updateDisplay(result);
 }
