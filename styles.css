@@ -11,7 +11,7 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: space-around;
   align-items: center;
   height: 100vh;
   background-color: lightgoldenrodyellow;
@@ -22,6 +22,7 @@ h1 {
   font-family: fantasy;
   font-size: 4rem;
   color: rgb(16, 20, 130);
+  text-align: center;
 }
 .container {
   background-color: rgb(16, 20, 212);
